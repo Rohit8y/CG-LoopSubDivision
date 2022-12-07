@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/">
+        <file>shaders/phong.frag</file>
+        <file>shaders/phong.vert</file>
+    </qresource>
+    <qresource prefix="/models">
+        <file alias="OpenCube.obj">models/OpenCube.obj</file>
+        <file alias="Suzanne.obj">models/Suzanne.obj</file>
+        <file alias="Fertility.obj">models/Fertility.obj</file>
+        <file alias="Torus.obj">models/Torus.obj</file>
+        <file alias="Tetrahedron.obj">models/Tetrahedron.obj</file>
+        <file alias="Octahedron.obj">models/Octahedron.obj</file>
+        <file alias="Icosahedron.obj">models/Icosahedron.obj</file>
+    </qresource>
+</RCC>

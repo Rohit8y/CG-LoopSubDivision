@@ -73,6 +73,11 @@ void LoopSubdivider::geometryRefinement(Mesh& controlMesh,
       int v = controlMesh.numVerts() + currentEdge.edgeIdx();
       // TODO: check the valence at the boundaries
       int valence = 6;
+      if (currentEdge.isBoundaryEdge()){
+          valence = currentEdge.origin->valence;
+          valence = 2;
+      qDebug() << valence;
+      }
       Vertex edgePointVert = Vertex(coords, nullptr, valence, v);
       newVertices[v] = edgePointVert;
     }
@@ -91,10 +96,12 @@ QVector3D LoopSubdivider::vertexPoint(const Vertex& vertex) const {
   // simpler Warren's stencil).
   QVector3D outputVertex;
   int valence = vertex.valence;
-
   //Boundary vertex
   if (vertex.isBoundaryVertex()){
-   outputVertex = vertex.coords;
+     QVector3D coord1 = vertex.nextBoundaryHalfEdge()->origin->coords;
+     QVector3D coord2 = vertex.prevBoundaryHalfEdge()->origin->coords;
+
+     outputVertex = (1.0/8.0) * (coord1 + coord2) + (3.0/4.0)*vertex.coords;
   }
   // Inner vertex
   else{
@@ -103,11 +110,11 @@ QVector3D LoopSubdivider::vertexPoint(const Vertex& vertex) const {
 
    // Find surrounding vertex coords
    std::vector<QVector3D> surroundingList = getSurroundingCoords(vertex);
-
+   // Sum of all neighbour vertices
+   QVector3D sumNeighbourCoords = getSumOfNeighborVertices(surroundingList,valence);
+   outputVertex = vertex.coords * (1. - valence*beta) + sumNeighbourCoords*beta ;
   }
-
-  qDebug() << vertex.isBoundaryVertex();
-  return vertex.coords;
+  return outputVertex;
 }
 
 /**
@@ -121,9 +128,21 @@ QVector3D LoopSubdivider::edgePoint(const HalfEdge& edge) const {
   // TODO: use edge stencil here. For now this just puts the edge point in the
   // middle of the edge
   QVector3D edgePt = edge.origin->coords;
-  edgePt += edge.next->origin->coords;
-  edgePt /= 2.0;
-  return edgePt;
+
+  QVector3D outputEdgeVertex;
+  if (edge.isBoundaryEdge()){
+     //qDebug() << "Is boundary";
+     edgePt += edge.next->origin->coords;
+     edgePt /= 2.0;
+     outputEdgeVertex = edgePt;
+  }
+  else{
+     QVector3D edgePt2 = edge.next->origin->coords;
+     QVector3D edgePt3 = edge.twin->prev->origin->coords;
+     QVector3D edgePt4 = edge.next->next->origin->coords;
+     outputEdgeVertex = (edgePt + edgePt2)*(6.0/16.0) + (edgePt3 + edgePt4)*(2.0/16.0);
+  }
+  return outputEdgeVertex;
 }
 
 /**
@@ -227,16 +246,35 @@ std::vector<QVector3D> LoopSubdivider::getSurroundingCoords(const Vertex& vertex
   // List of surrounding vertex coordinates
   std::vector<QVector3D> surroundingList;
 
-  HalfEdge *he = vertex.out;
+  HalfEdge *originHe = vertex.out;
+  HalfEdge *he = originHe->next;
+  Vertex *firstVertex = he->origin;
+  surroundingList.push_back(he->origin->coords);
 
   // Keep traversing through surrounding vertices until
   // we reach the original half-edge.
   do{
-    he = he->twin->next;
+    he = he->next;
     surroundingList.push_back(he->origin->coords);
-    he = he->prev->twin;
+    he = he->twin->next;
   }
-  while(he != vertex.out);
+  while(he->next->origin != firstVertex);
 
   return surroundingList;
+}
+
+/**
+ * @brief LoopSubdivider::getSumOfNeighborVertices Finds the sum
+ * of all neighbouring verties in surroundingList.
+ * @param surroundingList The list of coordinates of surrounding neighbours
+ * @param valence The valence of origin vertex.
+ */
+QVector3D LoopSubdivider::getSumOfNeighborVertices(std::vector<QVector3D> surroundingList, int valence) const{
+
+  QVector3D sumVertex = {0.0f, 0.0f, 0.0f};
+  for (int i = 0; i < valence; i++){
+    sumVertex += surroundingList.back();
+    surroundingList.pop_back();
+   }
+  return sumVertex;
 }

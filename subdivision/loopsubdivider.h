@@ -26,6 +26,7 @@ class LoopSubdivider : public Subdivider {
   float calculateBeta(int valence) const;
 
   std::vector <QVector3D> getSurroundingCoords(const Vertex& vertex) const;
+  QVector3D getSumOfNeighborVertices(const std::vector<QVector3D> surroundingList, int valence) const;
 
 };
 

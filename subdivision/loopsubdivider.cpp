@@ -89,8 +89,22 @@ void LoopSubdivider::geometryRefinement(Mesh& controlMesh,
 QVector3D LoopSubdivider::vertexPoint(const Vertex& vertex) const {
   // TODO: use vertex stencil here (either Loop's original stencil or the
   // simpler Warren's stencil).
+  QVector3D outputVertex;
   int valence = vertex.valence;
-  float beta = calculateBeta(valence);
+
+  //Boundary vertex
+  if (vertex.isBoundaryVertex()){
+   outputVertex = vertex.coords;
+  }
+  // Inner vertex
+  else{
+   // Calculate beta for the given vertex using valence
+   float beta = calculateBeta(valence);
+
+   // Find surrounding vertex coords
+   std::vector<QVector3D> surroundingList = getSurroundingCoords(vertex);
+
+  }
 
   qDebug() << vertex.isBoundaryVertex();
   return vertex.coords;
@@ -196,10 +210,33 @@ float LoopSubdivider::calculateBeta(int valence) const{
   float beta= .0;
   // Using Warren's stencil
   if (valence > 3){
-        beta = 0.375f / float(valence);
+     beta = 0.375f / float(valence);
    }
   else{
-        beta = 0.1875f;
+     beta = 0.1875f;
    }
   return beta;
+}
+
+/**
+ * @brief LoopSubdivider::getSurroundingCoords Iterates through half-edges and find
+ * the list of coordinates connected to the given vertex in parameter.
+ * @param vertex The initial vertex.
+ */
+std::vector<QVector3D> LoopSubdivider::getSurroundingCoords(const Vertex& vertex) const{
+  // List of surrounding vertex coordinates
+  std::vector<QVector3D> surroundingList;
+
+  HalfEdge *he = vertex.out;
+
+  // Keep traversing through surrounding vertices until
+  // we reach the original half-edge.
+  do{
+    he = he->twin->next;
+    surroundingList.push_back(he->origin->coords);
+    he = he->prev->twin;
+  }
+  while(he != vertex.out);
+
+  return surroundingList;
 }

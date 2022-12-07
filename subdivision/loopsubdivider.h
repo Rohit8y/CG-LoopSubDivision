@@ -20,10 +20,13 @@ class LoopSubdivider : public Subdivider {
 
   void setHalfEdgeData(Mesh& newMesh, int h, int edgeIdx, int vertIdx,
                        int twinIdx) const;
-  float calculateBeta(int valence) const;
 
   QVector3D vertexPoint(const Vertex& vertex) const;
   QVector3D edgePoint(const HalfEdge& edge) const;
+  float calculateBeta(int valence) const;
+
+  std::vector <QVector3D> getSurroundingCoords(const Vertex& vertex) const;
+
 };
 
 #endif  // LOOP_SUBDIVIDER_H

@@ -4,6 +4,8 @@
 #include "initialization/objfile.h"
 #include "subdivision/loopsubdivider.h"
 #include "ui_mainwindow.h"
+#include "settings.h"
+
 
 /**
  * @brief MainWindow::MainWindow Creates a new Main Window UI.
@@ -20,7 +22,6 @@ MainWindow::MainWindow(QWidget* parent)
  */
 MainWindow::~MainWindow() {
   delete ui;
-
   meshes.clear();
   meshes.squeeze();
 }

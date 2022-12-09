@@ -25,7 +25,7 @@ class MeshRenderer : public Renderer {
 
  private:
   GLuint vao;
-  GLuint meshCoordsBO, meshNormalsBO, meshIndexBO;
+  GLuint meshCoordsBO, meshNormalsBO, meshIndexBO, selectedVertexBO;
   int meshIBOSize;
 
   // Uniforms

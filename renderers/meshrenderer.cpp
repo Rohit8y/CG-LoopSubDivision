@@ -108,6 +108,7 @@ void MeshRenderer::draw() {
 
   gl->glBindVertexArray(vao);
   gl->glDrawElements(GL_TRIANGLES, meshIBOSize, GL_UNSIGNED_INT, nullptr);
+
   gl->glBindVertexArray(0);
 
   shaders[settings->currentShader]->release();

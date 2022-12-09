@@ -3,6 +3,7 @@
 
 #include "mesh/mesh.h"
 #include "subdivider.h"
+#include "../settings.h"
 
 /**
  * @brief The LoopSubdivider class is a subdivider class that performs Loop
@@ -12,6 +13,8 @@ class LoopSubdivider : public Subdivider {
  public:
   LoopSubdivider();
   Mesh subdivide(Mesh& controlMesh) const override;
+  void updateCurrentMesh(Mesh& newMesh)const;
+  int findClosest(const QVector2D& p, const float maxDist);
 
  private:
   void reserveSizes(Mesh& controlMesh, Mesh& newMesh) const;
@@ -27,6 +30,8 @@ class LoopSubdivider : public Subdivider {
 
   std::vector <QVector3D> getSurroundingCoords(const Vertex& vertex) const;
   QVector3D getSumOfNeighborVertices(const std::vector<QVector3D> surroundingList, int valence) const;
+
+  Settings *settings;
 
 };
 

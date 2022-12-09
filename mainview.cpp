@@ -192,7 +192,8 @@ void MainView::mouseMoveEvent(QMouseEvent* event) {
  * nothing except setting focus.
  * @param event Mouse event.
  */
-void MainView::mousePressEvent(QMouseEvent* event) { setFocus(); }
+void MainView::mousePressEvent(QMouseEvent* event) {  setFocus();            
+}
 
 /**
  * @brief MainView::wheelEvent Handles zooming of the view.

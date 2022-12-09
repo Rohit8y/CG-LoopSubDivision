@@ -5,6 +5,7 @@
 #include <QMainWindow>
 
 #include "mesh/mesh.h"
+#include "settings.h"
 #include "subdivision/subdivider.h"
 
 namespace Ui {
@@ -32,6 +33,7 @@ class MainWindow : public QMainWindow {
   Ui::MainWindow *ui;
   Subdivider *subdivider;
   QVector<Mesh> meshes;
+  Settings settings;
 };
 
 #endif  // MAINWINDOW_H

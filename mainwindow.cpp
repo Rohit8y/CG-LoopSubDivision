@@ -15,6 +15,9 @@ MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
   ui->setupUi(this);
   ui->MeshGroupBox->setEnabled(ui->MainDisplay->settings.modelLoaded);
+  ui->IsophotesGroupBox->setEnabled(ui->MainDisplay->settings.modelLoaded);
+  ui->RendererGroupBox->setEnabled(ui->MainDisplay->settings.modelLoaded);
+  //ui->MeshGroupBox->setEnabled(ui->MainDisplay->settings.modelLoaded);
 }
 
 /**
@@ -41,12 +44,19 @@ void MainWindow::importOBJ(const QString& fileName) {
     meshes.append(meshInitializer.constructHalfEdgeMesh(newModel));
     ui->MainDisplay->updateBuffers(meshes[0]);
     ui->MainDisplay->settings.modelLoaded = true;
-  } else {
+    ui->MainDisplay->settings.renderBasicModel = true;
+
+  }
+  else {
     ui->MainDisplay->settings.modelLoaded = false;
   }
-
-  ui->MeshGroupBox->setEnabled(ui->MainDisplay->settings.modelLoaded);
+  if (ui->MainDisplay->settings.phongShadingRender || ui->MainDisplay->settings.isophotesRender){
+    ui->MeshGroupBox->setEnabled(true);
+  }
+  ui->IsophotesGroupBox->setEnabled(ui->MainDisplay->settings.isophotesRender);
+  ui->RendererGroupBox->setEnabled(ui->MainDisplay->settings.modelLoaded);
   ui->SubdivSteps->setValue(0);
+  ui->frequencySteps->setValue(0);
   ui->MainDisplay->update();
 }
 
@@ -71,3 +81,69 @@ void MainWindow::on_SubdivSteps_valueChanged(int value) {
   ui->MainDisplay->updateBuffers(meshes[value]);
   delete subdivider;
 }
+
+void MainWindow::on_phongShadingCheckBox_toggled(bool checkedPhong){
+    ui->MainDisplay->settings.phongShadingRender = checkedPhong;
+    if (!checkedPhong){
+        importOBJ(":/models/" + ui->MeshPresetComboBox->currentText() + ".obj");
+    }
+    if (ui->MainDisplay->settings.phongShadingRender || ui->MainDisplay->settings.isophotesRender){
+      ui->MeshGroupBox->setEnabled(true);
+    }
+    else{
+        ui->MeshGroupBox->setEnabled(false);
+    }
+    update();
+}
+
+
+void MainWindow::on_isophotesCheckBox_toggled(bool checkedIsophote){
+    ui->MainDisplay->settings.isophotesRender = checkedIsophote;
+    ui->IsophotesGroupBox->setEnabled(checkedIsophote);
+    if (!checkedIsophote){
+        importOBJ(":/models/" + ui->MeshPresetComboBox->currentText() + ".obj");
+    }
+    else{
+        ui->MainDisplay->settings.uniformUpdateRequired = true;
+
+    }
+    if (ui->MainDisplay->settings.phongShadingRender || ui->MainDisplay->settings.isophotesRender){
+      ui->MeshGroupBox->setEnabled(true);
+    }
+    else{
+        ui->MeshGroupBox->setEnabled(false);
+    }
+    int valueSubDivision = ui->SubdivSteps->value();
+    ui->MainDisplay->updateBuffers(meshes[valueSubDivision]);
+    update();
+}
+
+
+void MainWindow::on_frequencySteps_valueChanged(int freq){
+    ui->MainDisplay->settings.frequencyIsophotes = freq;
+    ui->MainDisplay->settings.uniformUpdateRequired = true;
+    int valueSubDivision = ui->SubdivSteps->value();
+    ui->MainDisplay->updateBuffers(meshes[valueSubDivision]);
+    update();
+}
+
+
+void MainWindow::on_colorStripesComboBox_currentTextChanged(
+        const QString &colorStripes){
+    if(colorStripes == "Black & White"){
+       ui->MainDisplay->settings.colorStripeCode=0;
+    }
+    else if(colorStripes == "Red & White"){
+        ui->MainDisplay->settings.colorStripeCode=1;
+    }
+    else if(colorStripes == "Blue & White"){
+       ui->MainDisplay->settings.colorStripeCode=2;
+    }
+    ui->MainDisplay->settings.uniformUpdateRequired = true;
+    int valueSubDivision = ui->SubdivSteps->value();
+    ui->MainDisplay->updateBuffers(meshes[valueSubDivision]);
+    update();
+    update();
+
+}
+

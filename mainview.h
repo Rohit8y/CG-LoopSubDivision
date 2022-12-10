@@ -26,6 +26,8 @@ class MainView : public QOpenGLWidget, protected QOpenGLFunctions_4_1_Core {
   void updateMatrices();
   void updateUniforms();
   void updateBuffers(Mesh& mesh);
+  float angleBetweenVectors(const QVector2D& vec1, const QVector2D& vec2);
+
 
  protected:
   void initializeGL() override;

@@ -79,44 +79,56 @@ QGroupBox::title {
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>110</y>
+         <y>260</y>
          <width>201</width>
-         <height>131</height>
+         <height>111</height>
         </rect>
        </property>
-       <layout class="QVBoxLayout" name="verticalLayout">
-        <item>
-         <widget class="QLabel" name="loopTitleLabel">
-          <property name="text">
-           <string>Subdivision</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="stepsLayout">
-          <item>
-           <widget class="QLabel" name="SubdivLabel">
-            <property name="text">
-             <string>Steps:</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QSpinBox" name="SubdivSteps">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="maximum">
-             <number>8</number>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-       </layout>
+       <widget class="QLabel" name="subDivisionSettingsTitleLabel">
+        <property name="geometry">
+         <rect>
+          <x>13</x>
+          <y>22</y>
+          <width>171</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Subdivision Settings</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+       <widget class="QLabel" name="SubdivLabel">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>75</y>
+          <width>131</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Subdivision steps:</string>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="SubdivSteps">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>150</x>
+          <y>75</y>
+          <width>30</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="maximum">
+         <number>8</number>
+        </property>
+       </widget>
       </widget>
       <widget class="QComboBox" name="MeshPresetComboBox">
        <property name="geometry">
@@ -167,6 +179,151 @@ QGroupBox::title {
          <string>Icosahedron</string>
         </property>
        </item>
+      </widget>
+      <widget class="QGroupBox" name="IsophotesGroupBox">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>390</y>
+         <width>201</width>
+         <height>191</height>
+        </rect>
+       </property>
+       <widget class="QLabel" name="isophotesSettingsTitleLabel">
+        <property name="geometry">
+         <rect>
+          <x>13</x>
+          <y>22</y>
+          <width>171</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Isophotes Settings</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+       <widget class="QLabel" name="colorStripesLabel">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>100</y>
+          <width>131</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Color of stripes</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="frequencyLabel">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>60</y>
+          <width>131</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Frequency of stripes:</string>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="frequencySteps">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>150</x>
+          <y>60</y>
+          <width>32</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="maximum">
+         <number>100</number>
+        </property>
+       </widget>
+       <widget class="QComboBox" name="colorStripesComboBox">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>120</y>
+          <width>171</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <item>
+         <property name="text">
+          <string>Black &amp; White</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Red &amp; White</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Blue &amp; White</string>
+         </property>
+        </item>
+       </widget>
+      </widget>
+      <widget class="QGroupBox" name="RendererGroupBox">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>110</y>
+         <width>201</width>
+         <height>131</height>
+        </rect>
+       </property>
+       <widget class="QLabel" name="renderSettingsTitleLabel">
+        <property name="geometry">
+         <rect>
+          <x>13</x>
+          <y>22</y>
+          <width>181</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Render Settings</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="isophotesCheckBox">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>90</y>
+          <width>171</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Isophotes</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="phongShadingCheckBox">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>60</y>
+          <width>171</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Phong shading</string>
+        </property>
+       </widget>
       </widget>
      </widget>
     </item>

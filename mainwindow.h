@@ -27,7 +27,15 @@ class MainWindow : public QMainWindow {
   void on_MeshPresetComboBox_currentTextChanged(const QString &meshName);
   void on_SubdivSteps_valueChanged(int value);
 
- private:
+  void on_phongShadingCheckBox_toggled(bool checked);
+
+  void on_isophotesCheckBox_toggled(bool checked);
+
+  void on_frequencySteps_valueChanged(int arg1);
+
+  void on_colorStripesComboBox_currentTextChanged(const QString &arg1);
+
+private:
   void importOBJ(const QString &fileName);
 
   Ui::MainWindow *ui;

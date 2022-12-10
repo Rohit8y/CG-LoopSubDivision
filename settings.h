@@ -14,6 +14,12 @@
 typedef struct Settings {
   bool modelLoaded = false;
   bool wireframeMode = true;
+  bool phongShadingRender = false;
+  bool isophotesRender = false;
+  bool renderBasicModel = true;
+  int frequencyIsophotes = 0;
+  int colorStripeCode = 0;
+
 
   float FoV = 80;
   float dispRatio = 16.0f / 9.0f;
@@ -25,6 +31,7 @@ typedef struct Settings {
   Mesh currentMesh;
 
   ShaderType currentShader = ShaderType::PHONG;
+  ShaderType isophotesShader = ShaderType::ISOPHOTES;
 
   QMatrix4x4 modelViewMatrix, projectionMatrix;
   QMatrix3x3 normalMatrix;

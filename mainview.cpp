@@ -1,6 +1,7 @@
 #include "mainview.h"
 
 #include <math.h>
+#include <QPainter>
 
 #include <QLoggingCategory>
 #include <QOpenGLVersionFunctionsFactory>
@@ -232,4 +233,10 @@ void MainView::keyPressEvent(QKeyEvent* event) {
  */
 void MainView::onMessageLogged(QOpenGLDebugMessage Message) {
   qDebug() << " → Log:" << Message;
+}
+
+// Helper function to compute the angle between two vectors
+float  MainView::angleBetweenVectors(const QVector2D& vec1, const QVector2D& vec2)
+{
+    return acos(QVector2D::dotProduct(vec1, vec2) / (vec1.length() * vec2.length()));
 }

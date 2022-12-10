@@ -18,6 +18,8 @@ class MeshRenderer : public Renderer {
   void updateUniforms();
   void updateBuffers(Mesh& m);
   void draw();
+  void drawPhong();
+  void drawIsophotes();
 
  protected:
   void initShaders() override;
@@ -29,7 +31,7 @@ class MeshRenderer : public Renderer {
   int meshIBOSize;
 
   // Uniforms
-  GLint uniModelViewMatrix, uniProjectionMatrix, uniNormalMatrix;
+  GLint uniModelViewMatrix, uniProjectionMatrix, uniNormalMatrix, frequencyLocation, stripeColorLocation;
 };
 
 #endif  // MESHRENDERER_H

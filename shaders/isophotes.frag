@@ -27,7 +27,7 @@ vec3 getIsophotes(vec3 normal){
 
     float angle = dot(fixvector,normal);
     //int frequency = 10;
-    float temp = normalize(sin(frequency*angle)) ;
+    float temp = sin(frequency*angle) ;
     
     //Setting color values
     secondcolour =whitecolour;
@@ -41,12 +41,14 @@ vec3 getIsophotes(vec3 normal){
         firstcolour = bluecolour;
     }
     
+    // Scale to a range [0,1]
+    temp = (temp + 1) / (2);
     
     if (temp <= 0.5){
-        returnIso = firstcolour;
+        returnIso = secondcolour;
     }
     else{
-        returnIso =secondcolour;
+        returnIso = firstcolour;
     }
     return returnIso;
 }

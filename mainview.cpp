@@ -213,7 +213,6 @@ void MainView::mousePressEvent(QMouseEvent* event) {
             QVector3D ray_nds = toNormalizedDeviceCoordinates(mouse_x,mouse_y);
 
             // Clipping
-            // Pointing the ray forward in the negative z direction
             QVector4D ray_clip = QVector4D(ray_nds.x(),ray_nds.y(), 1.0 , 1.0);
 
             // Viewport transformation
@@ -224,13 +223,16 @@ void MainView::mousePressEvent(QMouseEvent* event) {
             // World
             QVector4D ray_eye_inverted = (settings.modelViewMatrix.inverted() * ray_eye_view);
             QVector3D ray_wor = QVector3D(ray_eye_inverted.x(),ray_eye_inverted.y(),ray_eye_inverted.z());
+
+            // Find closest point in the current mesh
             int indexPos = findClosest(ray_wor,0.4f);
+            // Update index of the point
             settings.selectedVertex = indexPos;
+
             updateMatrices();
             update();
         }
      }
-
 }
 
 /**

@@ -18,7 +18,7 @@ const vec3 blackcolour = vec3(0.0, 0.0, 0.0);
 const vec3 redcolour = vec3(1.0, 0.0, 0.0);
 const vec3 bluecolour = vec3(0.0, 0.0, 1.0);
 
-// Isophotes
+// Get color for the given vec3 normal using isophotes
 vec3 getIsophotes(vec3 normal){
     // Vector to be returned
     vec3 returnIso;
@@ -26,8 +26,8 @@ vec3 getIsophotes(vec3 normal){
     vec3 secondcolour =vec3(0.0, 0.0, 0.0);
 
     float angle = dot(fixvector,normal);
-    //int frequency = 10;
-    float temp = sin(frequency*angle) ;
+    // angle is multiplied by the uniform frequency
+    float outputRange = sin(frequency*angle) ;
     
     //Setting color values
     secondcolour =whitecolour;
@@ -42,9 +42,9 @@ vec3 getIsophotes(vec3 normal){
     }
     
     // Scale to a range [0,1]
-    temp = (temp + 1) / (2);
+    float outputRangeScaled = (outputRange + 1) / (2);
     
-    if (temp <= 0.5){
+    if (outputRangeScaled <= 0.5){
         returnIso = secondcolour;
     }
     else{

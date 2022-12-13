@@ -10,6 +10,7 @@
 #include "mesh/mesh.h"
 #include "renderers/meshrenderer.h"
 #include "subdivision/loopsubdivider.h"
+#include "mainwindow.h";
 
 
 /**
@@ -27,11 +28,15 @@ class MainView : public QOpenGLWidget, protected QOpenGLFunctions_4_1_Core {
   void updateUniforms();
   void updateBuffers(Mesh& mesh);
   float angleBetweenVectors(const QVector2D& vec1, const QVector2D& vec2);
+  int findClosest(const QVector3D& p, const float maxDist);
+  QVector<QVector3D> currentVertices;
+  void updateCurrentMesh(QVector<QVector3D> newVertice);
+  void resizeGL(int newWidth, int newHeight);
+
 
 
  protected:
   void initializeGL() override;
-  void resizeGL(int newWidth, int newHeight) override;
   void paintGL() override;
 
   void mouseMoveEvent(QMouseEvent* event) override;
@@ -41,6 +46,7 @@ class MainView : public QOpenGLWidget, protected QOpenGLFunctions_4_1_Core {
 
  private:
   QVector2D toNormalizedScreenCoordinates(float x, float y);
+  QVector3D toNormalizedDeviceCoordinates(int mouse_x, int mouse_y);
 
   QOpenGLDebugLogger debugLogger;
 

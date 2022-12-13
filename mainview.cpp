@@ -86,7 +86,6 @@ void MainView::updateMatrices() {
     settings.modelViewMatrix.rotate(rotationQuaternion);
 
     settings.normalMatrix = settings.modelViewMatrix.normalMatrix();
-
     settings.uniformUpdateRequired = true;
 
     update();
@@ -117,6 +116,9 @@ void MainView::paintGL() {
     if (settings.modelLoaded) {
         meshRenderer.draw();
     }
+    if (settings.selectedVertex == -1){
+        meshRenderer.draw();
+    }
 }
 
 /**
@@ -145,45 +147,48 @@ QVector2D MainView::toNormalizedScreenCoordinates(float x, float y) {
  * @param event Mouse event.
  */
 void MainView::mouseMoveEvent(QMouseEvent* event) {
-    if (event->buttons() == Qt::LeftButton) {
-        QVector2D sPos = toNormalizedScreenCoordinates(event->position().x(),
-                                                       event->position().y());
-        QVector3D newVec = QVector3D(sPos.x(), sPos.y(), 0.0);
+    // Only works when vertex selection is not checked
+    if (!settings.renderVertexSelection){
+        if (event->buttons() == Qt::LeftButton) {
+            QVector2D sPos = toNormalizedScreenCoordinates(event->position().x(),
+                                                           event->position().y());
+            QVector3D newVec = QVector3D(sPos.x(), sPos.y(), 0.0);
 
-        // project onto sphere
-        float sqrZ = 1.0f - QVector3D::dotProduct(newVec, newVec);
-        if (sqrZ > 0) {
-            newVec.setZ(sqrt(sqrZ));
+            // project onto sphere
+            float sqrZ = 1.0f - QVector3D::dotProduct(newVec, newVec);
+            if (sqrZ > 0) {
+                newVec.setZ(sqrt(sqrZ));
+            } else {
+                newVec.normalize();
+            }
+
+            QVector3D v2 = newVec.normalized();
+            // reset if we are starting a drag
+            if (!dragging) {
+                dragging = true;
+                oldVec = newVec;
+                return;
+            }
+
+            // calculate axis and angle
+            QVector3D v1 = oldVec.normalized();
+            QVector3D N = QVector3D::crossProduct(v1, v2).normalized();
+            if (N.length() == 0.0f) {
+                oldVec = newVec;
+                return;
+            }
+            float angle = 180.0f / M_PI * acos(QVector3D::dotProduct(v1, v2));
+            rotationQuaternion =
+                QQuaternion::fromAxisAndAngle(N, angle) * rotationQuaternion;
+            updateMatrices();
+
+            // for next iteration
+            oldVec = newVec;
         } else {
-            newVec.normalize();
+            // to reset drag
+            dragging = false;
+            oldVec = QVector3D();
         }
-
-        QVector3D v2 = newVec.normalized();
-        // reset if we are starting a drag
-        if (!dragging) {
-            dragging = true;
-            oldVec = newVec;
-            return;
-        }
-
-        // calculate axis and angle
-        QVector3D v1 = oldVec.normalized();
-        QVector3D N = QVector3D::crossProduct(v1, v2).normalized();
-        if (N.length() == 0.0f) {
-            oldVec = newVec;
-            return;
-        }
-        float angle = 180.0f / M_PI * acos(QVector3D::dotProduct(v1, v2));
-        rotationQuaternion =
-            QQuaternion::fromAxisAndAngle(N, angle) * rotationQuaternion;
-        updateMatrices();
-
-        // for next iteration
-        oldVec = newVec;
-    } else {
-        // to reset drag
-        dragging = false;
-        oldVec = QVector3D();
     }
 }
 
@@ -192,7 +197,40 @@ void MainView::mouseMoveEvent(QMouseEvent* event) {
  * nothing except setting focus.
  * @param event Mouse event.
  */
-void MainView::mousePressEvent(QMouseEvent* event) {  setFocus();            
+void MainView::mousePressEvent(QMouseEvent* event) {
+    setFocus();
+    // Only works when vertex selection is checked
+    if (settings.renderVertexSelection){
+        if (event->buttons() == Qt::LeftButton) {
+
+            // Get screen space coordinates
+            int mouse_x = event->position().x();
+            int mouse_y = event->position().y();
+            GLfloat depth;
+            glReadPixels(mouse_x, height() - 1 - mouse_y,1, 1,
+                                     GL_LEQUAL, GL_FLOAT, &depth);
+            // Get NDC
+            QVector3D ray_nds = toNormalizedDeviceCoordinates(mouse_x,mouse_y);
+
+            // Clipping
+            // Pointing the ray forward in the negative z direction
+            QVector4D ray_clip = QVector4D(ray_nds.x(),ray_nds.y(), 1.0 , 1.0);
+
+            // Viewport transformation
+            QVector4D ray_eye = settings.projectionMatrix.inverted() * ray_clip;
+            float w =   2;
+            QVector4D ray_eye_view = QVector4D(ray_eye.x()*w,ray_eye.y()*w,ray_eye.z()*w,1.0);
+
+            // World
+            QVector4D ray_eye_inverted = (settings.modelViewMatrix.inverted() * ray_eye_view);
+            QVector3D ray_wor = QVector3D(ray_eye_inverted.x(),ray_eye_inverted.y(),ray_eye_inverted.z());
+            int indexPos = findClosest(ray_wor,0.4f);
+            settings.selectedVertex = indexPos;
+            updateMatrices();
+            update();
+        }
+     }
+
 }
 
 /**
@@ -200,10 +238,13 @@ void MainView::mousePressEvent(QMouseEvent* event) {  setFocus();
  * @param event Mouse event.
  */
 void MainView::wheelEvent(QWheelEvent* event) {
-    // Delta is usually 120
-    float phi = 1.0f + (event->angleDelta().y() / 2000.0f);
-    scale = fmin(fmax(phi * scale, 0.01f), 100.0f);
-    updateMatrices();
+    // Only works when vertex selection is not checked
+    if (!settings.renderVertexSelection){
+        // Delta is usually 120
+        float phi = 1.0f + (event->angleDelta().y() / 2000.0f);
+        scale = fmin(fmax(phi * scale, 0.01f), 100.0f);
+        updateMatrices();
+    }
 }
 
 /**
@@ -212,18 +253,21 @@ void MainView::wheelEvent(QWheelEvent* event) {
  * @param event Mouse event.
  */
 void MainView::keyPressEvent(QKeyEvent* event) {
-    switch (event->key()) {
-        case 'Z':
-              settings.wireframeMode = !settings.wireframeMode;
-              update();
-              break;
-        case 'R':
-              scale = 1.0f;
-              rotationQuaternion = QQuaternion();
-              updateMatrices();
-              update();
-              break;
-    }
+    // Only works when vertex selection is not checked
+    if (!settings.renderVertexSelection){
+        switch (event->key()) {
+            case 'Z':
+                  settings.wireframeMode = !settings.wireframeMode;
+                  update();
+                  break;
+            case 'R':
+                  scale = 1.0f;
+                  rotationQuaternion = QQuaternion();
+                  updateMatrices();
+                  update();
+                  break;
+        }
+     }
 }
 
 /**
@@ -232,4 +276,53 @@ void MainView::keyPressEvent(QKeyEvent* event) {
  */
 void MainView::onMessageLogged(QOpenGLDebugMessage Message) {
     qDebug() << " → Log:" << Message;
+}
+
+/**
+ * @brief MainView::toNormalizedDeviceCoordinates Transforms the screen corrdinates to
+ * 3D normalised device coordinates.
+ * @param mouse_x X coordinates of screen space.
+ * @param mouse_y Y coordinates of screen space.
+ */
+QVector3D MainView::toNormalizedDeviceCoordinates(int mouse_x, int mouse_y){
+    QVector3D ray_nds;
+
+    // Scale the range of x and y [-1:1] and reverse the direction of y.
+    float x = (2.0f * mouse_x) / width() - 1.0f;
+    float y = 1.0f - (2.0f * mouse_y) / height();
+    float z = 0.0f;
+    ray_nds = QVector3D(x, y, z);
+
+    return ray_nds;
+}
+
+/**
+ * @brief MainView::findClosest Finds the index of the closest vertex in
+ * themesh to the provided vertex.
+ * @param p The point to find the closest point to.
+ * @param maxDist The maximum distance a point and the provided point can have.
+ * Is a value between 0 and 1.
+ * @return The index of the closest point to the provided point. Returns -1 if
+ * no point was found within the maximum distance.
+ */
+int MainView::findClosest(const QVector3D& p, const float maxDist) {
+  int ptIndex = -1;
+  float currentDist, minDist = 4;
+  QVector<QVector3D> vertices = currentVertices;
+
+  for (int k = 0; k < currentVertices.size(); k++) {
+    currentDist = vertices[k].distanceToPoint(p);
+    if (currentDist < minDist) {
+      minDist = currentDist;
+      ptIndex = k;
+    }
+  }
+  if (minDist >= maxDist) {
+    return -1;
+  }
+  return ptIndex;
+}
+
+void MainView::updateCurrentMesh(const QVector<QVector3D> newVertice){
+    currentVertices = newVertice;
 }

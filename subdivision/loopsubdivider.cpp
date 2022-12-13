@@ -218,7 +218,7 @@ void LoopSubdivider::setHalfEdgeData(Mesh& newMesh, int h, int edgeIdx,
 
 /**
  * @brief LoopSubdivider::calculateBeta Calculates the beta value using
- * Joe Warren's stencil using input valence value;
+ * Loop's stencil and using input valence value.
  * @param valence The valence of a given vertex.
  */
 float LoopSubdivider::calculateBeta(int valence) const{
@@ -244,7 +244,7 @@ std::vector<QVector3D> LoopSubdivider::getSurroundingCoords(const Vertex& vertex
     surroundingList.push_back(he->origin->coords);
 
     // Keep traversing through surrounding vertices until
-    // we reach the original half-edge.
+    // we reach the first vertex.
     do{
         he = he->next;
         surroundingList.push_back(he->origin->coords);

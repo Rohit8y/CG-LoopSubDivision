@@ -35,8 +35,11 @@ class MainWindow : public QMainWindow {
 
   void on_colorStripesComboBox_currentTextChanged(const QString &arg1);
 
+  void on_vertexSelectionCheckBox_toggled(bool checked);
+
 private:
   void importOBJ(const QString &fileName);
+  void importOBJVertexSelection(const QString &fileName);
 
   Ui::MainWindow *ui;
   Subdivider *subdivider;

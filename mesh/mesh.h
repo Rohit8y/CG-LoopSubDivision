@@ -31,9 +31,10 @@ class Mesh {
   int numHalfEdges();
   int numFaces();
   int numEdges();
+  QVector<QVector3D> vertexCoords;
+
 
  private:
-  QVector<QVector3D> vertexCoords;
   QVector<QVector3D> vertexNormals;
   QVector<unsigned int> polyIndices;
 

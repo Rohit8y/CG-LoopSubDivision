@@ -20,6 +20,7 @@ class MeshRenderer : public Renderer {
   void draw();
   void drawPhong();
   void drawIsophotes();
+  void drawVertexSelection();
 
  protected:
   void initShaders() override;

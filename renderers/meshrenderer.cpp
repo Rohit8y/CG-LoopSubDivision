@@ -82,6 +82,8 @@ void MeshRenderer::updateBuffers(Mesh& mesh) {
  */
 void MeshRenderer::updateUniforms() {
     QOpenGLShaderProgram* shader;
+
+    // Get shader on the basis of UI selection.
     if (settings->renderBasicModel && !settings->phongShadingRender && !settings->isophotesRender){
         shader = shaders[settings->currentShader];}
     else if (settings->phongShadingRender && settings->renderBasicModel){
@@ -122,7 +124,7 @@ void MeshRenderer::draw() {
     if (settings->renderBasicModel && !settings->phongShadingRender && !settings->isophotesRender){
         drawPhong();
     }
-    // Draw Phon shader
+    // Draw Phong shader
     else if (settings->phongShadingRender && settings->renderBasicModel){
         drawPhong();
     }
@@ -144,6 +146,13 @@ void MeshRenderer::drawPhong(){
     }
     gl->glBindVertexArray(vao);
     gl->glDrawElements(GL_TRIANGLES, meshIBOSize, GL_UNSIGNED_INT, nullptr);
+
+    // Highlight selected vertex point
+    if (settings->selectedVertex > -1) {
+        gl->glPointSize(30.0);
+        gl->glDrawArrays(GL_POINTS, settings->selectedVertex, 1);
+    }
+
     gl->glBindVertexArray(0);
     shaders[settings->currentShader]->release();
 }

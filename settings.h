@@ -17,6 +17,7 @@ typedef struct Settings {
   bool phongShadingRender = false;
   bool isophotesRender = false;
   bool renderBasicModel = true;
+  bool renderVertexSelection = false;
   int frequencyIsophotes = 0;
   int colorStripeCode = 0;
 
@@ -28,10 +29,11 @@ typedef struct Settings {
   bool uniformUpdateRequired = true;
 
   int selectedVertex = -1;
-  Mesh currentMesh;
 
   ShaderType currentShader = ShaderType::PHONG;
   ShaderType isophotesShader = ShaderType::ISOPHOTES;
+  ShaderType vertexSelectionShader = ShaderType::VERTEXSELECTION;
+
 
   QMatrix4x4 modelViewMatrix, projectionMatrix;
   QMatrix3x3 normalMatrix;
